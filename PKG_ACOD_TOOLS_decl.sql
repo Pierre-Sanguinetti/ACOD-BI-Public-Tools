@@ -1,6 +1,7 @@
 CREATE OR REPLACE PACKAGE PKG_ACOD_TOOLS AS
 -- Copyright (c) 2021 Pierre-Sanguinetti
--- v64+
+-- v65+
+--MOD_20201121.dload_fk
 /*
 Package d'outils divers.
 Ce package est public et peut être installé sur n'importe quel schemas.
@@ -149,6 +150,36 @@ WHERE TABLE_NAME IN('TST1', 'CHILD_TST1') ORDER BY TABLE_NAME, CONSTRAINT_NAME;
 
 */
 
+--MOD_20201121.dload_fk
+PROCEDURE ALTER_TABLE_DISABLE_PK_UK(
+   sOwner IN ALL_TABLES.OWNER%TYPE, sTableName IN ALL_TABLES.TABLE_NAME%TYPE);
+PROCEDURE ALTER_TABLE_DISABLE_PK_UK(sTableName IN ALL_TABLES.TABLE_NAME%TYPE);
+/*
+Description
+--+----+--
+Desactive les PK UK d'une table.
+Les PK UK doivent s'appuyer sur des indexes non uniques.
+
+Test
+----
+exec PKG_ACOD_TOOLS.ALTER_TABLE_DISABLE_PK_UK(USER, 'TST1')
+
+*/
+
+--MOD_20201121.dload_fk
+PROCEDURE ALTER_TABLE_ENABLE_PK_UK(sOwner IN ALL_TABLES.OWNER%TYPE, sTableName IN ALL_TABLES.TABLE_NAME%TYPE);
+PROCEDURE ALTER_TABLE_ENABLE_PK_UK(sTableName IN ALL_TABLES.TABLE_NAME%TYPE);
+/*
+Description
+--+----+---
+Reactive les PK UK FK d'une table.
+
+Test
+----
+exec PKG_ACOD_TOOLS.ALTER_TABLE_ENABLE_PK_UK(USER, 'TST1')
+
+*/
+
 
 PROCEDURE ALTER_TABLE_UNUSABLE_INDEXES(sOwner IN ALL_TABLES.OWNER%TYPE, sTableName IN ALL_TABLES.TABLE_NAME%TYPE);
 PROCEDURE ALTER_TABLE_UNUSABLE_INDEXES(sTableName IN ALL_TABLES.TABLE_NAME%TYPE);
@@ -197,6 +228,7 @@ Description
 --+----+---
 Rend inutilisables (UNUSABLE STATUS) les indexes d'une table.
 Désactive les éventuelles constraintes d'unicité.
+Désactive les éventuelles FK.
 Pour que l'alimentation de la table soit convenablement préparée par cette procédure,
 les éventuelles contraintes d'unicité doivent s'appuyer sur des indexes non uniques.
 
